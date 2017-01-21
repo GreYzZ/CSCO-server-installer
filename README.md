@@ -32,7 +32,7 @@ This will announce 1 minute countdown to restart the server.
 
 Server shutdown (fast)
 <code>./csgoserver shutdown fast</code>
-This will announce 1 minute countdown to shutdown the server.
+This will announce 10 second countdown to shutdown the server.
 
 Send message to server
 <code>./csgoserver msg Hello</code>
