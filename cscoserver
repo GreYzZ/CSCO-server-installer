@@ -65,6 +65,7 @@ selfname="$0"
 lockselfname=$(echo ".${servicename}.lock")
 filesdir="${rootdir}/serverfiles"
 systemdir="${filesdir}/csgo"
+cscodir="${filesdir}/csco"
 executabledir="${filesdir}"
 executable="./srcds_run"
 servercfgdir="${systemdir}/cfg"
@@ -725,18 +726,100 @@ sleep 1
 echo ""
 }
 
+get_csco_version() {
+cd "${rootdir}"
+cd "${filesdir}"
+if [ -d csco ]; then 
+cd "${cscodir}"
+current_version=$(cat version.xml| sed -n 's:.*<version>\(.*\)</version>.*:\1:p')
+cd ..
+else
+echo "csco directory not found"
+fi
+}
+
 fn_install_csco(){
 echo "Installing ${gamename}"
 echo "================================="
 sleep 1
 cd "${rootdir}"
 cd "${filesdir}"
-echo "Installing ${gamename}..."
-wget -nv -N https://github.com/csco/Classic-Offensive/releases/download/1.1d/ClassicOffensive_Beta1.1d.zip
-unzip ClassicOffensive_Beta1.1d
-rm ClassicOffensive_Beta1.1d.zip
+check_for_mod_update
+echo "Downloading csco mod..."
+wget --quiet https://github.com/csco/Classic-Offensive/releases/download/$check_version/ClassicOffensive_Beta$check_version.zip
+unzip ClassicOffensive_Beta$check_version
 rm HostMe.txt
 rm ReadMe.txt
+rm ClassicOffensive_Beta"$check_version".zip
+update_versio_file
+sleep 1
+echo ""
+}
+
+update_mod() {
+get_status
+if [ "${status}" == "0" ]; then
+	fn_stopserver
+else
+	countdown "MOD UPDATE" $2
+sleep 1
+	fn_stopserver
+fi
+}
+
+check_for_mod_update() {
+check_version=$(wget -qO - https://raw.githubusercontent.com/csco/Classic-Offensive/master/version.xml | sed -n 's:.*<version>\(.*\)</version>.*:\1:p')
+}
+
+update_versio_file() {
+check_for_mod_update
+cd ..
+cd "${cscodir}"
+echo "<?xml version="1.0" encoding="UTF-8"?><csco><version>"$check_version"</version></csco>" > version.xml
+}
+
+fn_update_csco(){
+echo "Updating ${gamename}"
+echo "================================="
+sleep 1
+get_csco_version
+check_for_mod_update
+
+if [ "$check_version" == "$current_version" ]; then    
+    echo "You have the newest version" 
+else
+	echo "New version available"
+	while true; do
+	read -p "Update now? [y/N]" yn
+	case $yn in
+	[Yy]* ) update_mod; break;;
+	[Nn]* ) echo Exiting; return 1;;
+	* ) echo "Please answer yes or no.";;
+esac
+done
+
+if [ -d csco ]; then   
+	echo "Downloading csco update..."
+    wget --quiet https://github.com/csco/Classic-Offensive/releases/download/$check_version/ClassicOffensive_Beta$check_version.zip
+    rm -R csco
+    unzip ClassicOffensive_Beta$check_version
+    rm HostMe.txt
+	rm ReadMe.txt
+	rm ClassicOffensive_Beta"$check_version".zip
+	update_versio_file
+	fn_startserver
+else
+	echo "Downloading csco update..."
+    wget --quiet https://github.com/csco/Classic-Offensive/releases/download/$check_version/ClassicOffensive_Beta$check_version.zip
+    unzip ClassicOffensive_Beta$check_version
+    rm HostMe.txt
+	rm ReadMe.txt
+	rm ClassicOffensive_Beta"$check_version".zip
+	update_versio_file
+	fn_startserver
+fi
+fi
+
 sleep 1
 echo ""
 }
@@ -803,7 +886,7 @@ fn_steaminstall
 fn_steamfix
 fn_loginstall
 fn_install_csco
-echo "Configuring ${gamename} Offensive Server"
+echo "Configuring ${gamename}"
 echo "================================="
 	sleep 1
 	read -p "Enter server name: " servername
@@ -907,6 +990,9 @@ case "$1" in
 		fn_stopserver
 		fn_updateserver
 		fn_startserver;;
+
+	update-mod)
+		fn_update_csco;;
 	
 	validate)
 		fn_validateserver;;
@@ -989,6 +1075,9 @@ case "$1" in
 		echo ""
 		echo "    $0 update-restart"
 		echo "      - updates and restarts the server."
+		echo ""
+		echo "    $0 update-mod"
+		echo "      - updates the csco mod."
 		echo ""
 		echo "    $0 console"
 		echo "      - opens console."
