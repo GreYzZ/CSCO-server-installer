@@ -21,18 +21,33 @@ Mod updater will be done later.
   <li>Send msg go to server</li>
 </ul>
 
+<h2>Install</h2>
+<code>sudo dpkg --add-architecture i386; sudo apt-get update; sudo apt-get install mailutils postfix curl wget file bzip2 gzip unzip bsdmainutils python util-linux tmux lib32gcc1 libstdc++6 libstdc++6:i386</code>
+download the script
+do
+<code>chmod +x cscoserver</code>
+edit variables like "players", "port"
+
 <h2>Usage</h2>
 Server restart (fast)
-<code>./csgoserver restart fast</code>
+<code>./cscoserver restart fast</code>
 This will announce 10 second countdown to restart the server.
 
 Server restart
-<code>./csgoserver restart</code>
+<code>./cscoserver restart</code>
 This will announce 1 minute countdown to restart the server.
 
 Server shutdown (fast)
-<code>./csgoserver shutdown fast</code>
+<code>./cscoserver shutdown fast</code>
 This will announce 10 second countdown to shutdown the server.
 
 Send message to server
-<code>./csgoserver msg Hello</code>
+<code>./cscoserver msg Hello</code>
+
+Update csco mod
+<code>./cscoserver update-mod</code>
+
+<h2>Crontabs</h2>
+Send message "Server restart every day" to server every 2 minutes
+<code>crontab -e</code>
+<code>*/2 * * * * /home/csgo/csgosrv/./cscoserver msg Server restart every day</code>
