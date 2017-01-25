@@ -22,10 +22,10 @@ Mod updater will be done later.
 </ul>
 
 <h2>Install</h2>
-<code>sudo dpkg --add-architecture i386; sudo apt-get update; sudo apt-get install mailutils postfix curl wget file bzip2 gzip unzip bsdmainutils python util-linux tmux lib32gcc1 libstdc++6 libstdc++6:i386</code>
-download the script
-do
-<code>chmod +x cscoserver</code>
+<code>sudo dpkg --add-architecture i386; sudo apt-get update; sudo apt-get install mailutils postfix curl wget file bzip2 gzip unzip bsdmainutils python util-linux tmux lib32gcc1 libstdc++6 libstdc++6:i386</code><br />
+download the script<br />
+do<br />
+<code>chmod +x cscoserver</code><br />
 edit variables like "players", "port"
 
 <h2>Usage</h2>
@@ -48,6 +48,6 @@ Update csco mod
 <code>./cscoserver update-mod</code>
 
 <h2>Crontabs</h2>
-Send message "Server restart every day" to server every 2 minutes
-<code>crontab -e</code>
+Send message "Server restart every day" to server every 2 minutes<br />
+<code>crontab -e</code><br />
 <code>*/2 * * * * /home/csgo/csgosrv/./cscoserver msg Server restart every day</code>
